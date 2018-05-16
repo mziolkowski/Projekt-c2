@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/maciej/CLionProjects/Projekt/ipv4/src/ipv4.c
+malloc.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+netinet/in.h
+-
+netinet/ip6.h
+-
+
+/home/maciej/CLionProjects/Projekt/main.c
+stdio.h
+-
+stdlib.h
+-
+netdb.h
+-
+linux/ip.h
+-
+linux/icmp.h
+-
+sys/socket.h
+-
+netinet/in.h
+-
+arpa/inet.h
+-
+
