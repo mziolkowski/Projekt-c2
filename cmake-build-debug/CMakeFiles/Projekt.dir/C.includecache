@@ -33,12 +33,14 @@ stdlib.h
 -
 netdb.h
 -
-linux/icmp.h
+ipv4/src/icmp_hdr.h
+/home/maciej/CLionProjects/Projekt/ipv4/src/icmp_hdr.h
+ipv4/src/ip.h
+/home/maciej/CLionProjects/Projekt/ipv4/src/ip.h
+sys/socket.h
+-
+netinet/in.h
 -
 arpa/inet.h
 -
-ipv4/src/ip.h
-/home/maciej/CLionProjects/Projekt/ipv4/src/ip.h
-ipv4/src/icmp_hdr.h
-/home/maciej/CLionProjects/Projekt/ipv4/src/icmp_hdr.h
 
