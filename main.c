@@ -1,4 +1,3 @@
-///* send icmp packet example */
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -6,9 +5,8 @@
 //#include <linux/icmp.h>
 #include "ipv4/src/icmp_hdr.h"
 #include "ipv4/src/ip.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+
 unsigned short in_cksum(unsigned short *addr, int len) {
     register int sum = 0;
     u_short answer = 0;
@@ -23,7 +21,7 @@ unsigned short in_cksum(unsigned short *addr, int len) {
         sum += *w++;
         nleft -= 2;
     }
-//  zgaś nieparzysty bajt, jeśli to konieczne
+    /* zgaś nieparzysty bajt, jeśli to konieczne */
     if (nleft == 1) {
         *(u_char *) (&answer) = *(u_char *) w;
         sum += answer;
@@ -53,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     printf("\nIle wyslac pakietow? ");
     scanf("%d", &liczbaPakietow);
-     printf("\nPodaj adres ip docelowy ");
+    printf("\nPodaj adres ip docelowy ");
     scanf("%s", dst_addr);
 //    printf("%s", dst_addr);
     printf("\nPodaj dlugosc nagłówka ip (domyslnie 5) ");
