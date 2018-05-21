@@ -35,12 +35,6 @@ netdb.h
 -
 linux/icmp.h
 -
-linux/types.h
--
-sys/socket.h
--
-netinet/in.h
--
 arpa/inet.h
 -
 ipv4/src/ip.h

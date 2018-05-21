@@ -9,7 +9,8 @@
 struct icmp_hdr {
     unsigned int type:8;
     unsigned int code:8;
-    struct eleBufora *nowyEleICMP;
+    unsigned short icmp_sum;
+    struct eleBuforaIcmp *nowyEleICMP;
     union {
         struct {
             __be16	id;
@@ -21,6 +22,7 @@ struct icmp_hdr {
             __be16	mtu;
         } frag;
     } un;
+
 };
 #endif //PROJEKT_ICMP_HDR_H
 

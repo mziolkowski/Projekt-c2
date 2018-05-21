@@ -14,9 +14,9 @@ struct ip {
     unsigned short ip_off;            /* fragment pola offset*/
     unsigned char ip_ttl;            /* czaszycia*/
     unsigned char ip_p;            /* protokol */
-    unsigned short ip_sum;            /* checksum */
     unsigned int ip_src_addr;
     unsigned int ip_dest_addr;
-    struct eleBufora *nowyEle;
+    unsigned short ip_sum;            /* checksum */
+    struct eleBufora *nowyEleIp;
 };
 #endif //PROJEKT_IP_H
