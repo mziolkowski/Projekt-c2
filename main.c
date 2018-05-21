@@ -15,34 +15,35 @@ unsigned short in_cksum(unsigned short *addr, int len) {
     register u_short *w = addr;
     register int nleft = len;
     /*
-     * Our algorithm is simple, using a 32 bit accumulator (sum), we add
-     * sequential 16 bit words to it, and at the end, fold back all the
-     * carry bits from the top 16 bits into the lower 16 bits.
+     * Algorytm uzywa 32 bitowego akumulatora(sumy), dodajemy do niego
+     * sekwencyjne 16-bitowe słowa, a na koniec składamy wszystkie bity
+     * przenoszące z 16 pierwszych bitów do 16 ostatnich bitów.
      */
     while (nleft > 1) {
         sum += *w++;
         nleft -= 2;
     }
-    /* mop up an odd byte, if necessary */
+//  zgaś nieparzysty bajt, jeśli to konieczne
     if (nleft == 1) {
         *(u_char *) (&answer) = *(u_char *) w;
         sum += answer;
     }
-    /* add back carry outs from top 16 bits to low 16 bits */
-    sum = (sum >> 16) + (sum & 0xffff);     /* add hi 16 to low 16 */
-    sum += (sum >> 16);             /* add carry */
-    answer = ~sum;              /* truncate to 16 bits */
+    /* dodajemy z powrotem od 16 do 16 bitow */
+    sum = (sum >> 16) + (sum & 0xffff);     /* dodajemy pierwsze 16 z starszymi 16 bitami*/
+    sum += (sum >> 16);
+    answer = ~sum;              /* obciecie do 16 bitow */
     return (answer);
 }
+
+
 int main(int argc, char *argv[]) {
-    struct ip *ip, *ip_reply;
+    struct ip *ip;
     struct icmp_hdr *icmp;
     struct sockaddr_in connection;
-    char *dst_addr = "192.168.0.1";
-    char *src_addr = "192.168.0.15";
+    char dst_addr[32];
+    char *src_addr = "127.0.0.1";
     char *packet, *buffer;
     int sockfd, optval, addrlen;
-    char input[32];
     int i = 0;
     int liczbaPakietow, ihl, version, protocol1, type, code, sequence, id;
     packet = malloc(sizeof(struct ip) + sizeof(struct icmp_hdr));
@@ -52,6 +53,9 @@ int main(int argc, char *argv[]) {
 
     printf("\nIle wyslac pakietow? ");
     scanf("%d", &liczbaPakietow);
+     printf("\nPodaj adres ip docelowy ");
+    scanf("%s", dst_addr);
+//    printf("%s", dst_addr);
     printf("\nPodaj dlugosc nagłówka ip (domyslnie 5) ");
     scanf("%d", &ihl);
 //    printf("\nPodaj wersje protokolu (domyslnie 4) ");
@@ -84,8 +88,8 @@ int main(int argc, char *argv[]) {
         perror("socket");
         exit(EXIT_FAILURE);
     }
-    /* IP_HDRINCL must be set on the socket so that the kernel does not attempt
-    *  to automatically add a default ip header to the packet*/
+    /* IP_HDRINCL musi być ustawiony na gnieździe, aby kernel
+     * nie próbował automatycznie dodać domyślnego nagłówka ip do pakietu*/
     setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
     connection.sin_family = AF_INET;
     connection.sin_addr.s_addr = ip->daddr;
@@ -95,3 +99,4 @@ int main(int argc, char *argv[]) {
         i++;
     }
 }
+
