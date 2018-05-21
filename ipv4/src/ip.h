@@ -5,10 +5,8 @@
 #ifndef PROJEKT_IP_H
 #define PROJEKT_IP_H
 
-#include <ntsid.h>
-
 struct ip {
-    unsigned int ip_v:4,            /* varsja */
+    unsigned int ip_v:4;           /* wersja */
     unsigned char ip_hl:4;        /* dlugosc naglowka*/
     unsigned char ip_tos;            /* rodzaj uslugi */
     unsigned short ip_len;            /* calkowita dlugosc*/
@@ -17,8 +15,8 @@ struct ip {
     unsigned char ip_ttl;            /* czaszycia*/
     unsigned char ip_p;            /* protokol */
     unsigned short ip_sum;            /* checksum */
-    unsigned int src_addr[4];
-    unsigned int dest_addr[4];
+    unsigned int ip_src_addr;
+    unsigned int ip_dest_addr;
     struct eleBufora *nowyEle;
 };
 #endif //PROJEKT_IP_H

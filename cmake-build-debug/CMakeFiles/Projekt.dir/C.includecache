@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+/home/maciej/CLionProjects/Projekt/ipv4/src/icmp_hdr.h
+linux/types.h
+-
+
+/home/maciej/CLionProjects/Projekt/ipv4/src/ip.h
+
 /home/maciej/CLionProjects/Projekt/ipv4/src/ipv4.c
 malloc.h
 -
@@ -27,9 +33,9 @@ stdlib.h
 -
 netdb.h
 -
-linux/ip.h
--
 linux/icmp.h
+-
+linux/types.h
 -
 sys/socket.h
 -
@@ -37,4 +43,8 @@ netinet/in.h
 -
 arpa/inet.h
 -
+ipv4/src/ip.h
+/home/maciej/CLionProjects/Projekt/ipv4/src/ip.h
+ipv4/src/icmp_hdr.h
+/home/maciej/CLionProjects/Projekt/ipv4/src/icmp_hdr.h
 

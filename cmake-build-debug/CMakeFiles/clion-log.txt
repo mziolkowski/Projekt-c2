@@ -1,7 +1,4 @@
 /opt/clion-2017.3.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/maciej/CLionProjects/Projekt
-CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
-  CMake 3.10 or higher is required.  You are running version 3.9.6
-
-
--- Configuring incomplete, errors occurred!
-See also "/home/maciej/CLionProjects/Projekt/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/maciej/CLionProjects/Projekt/cmake-build-debug

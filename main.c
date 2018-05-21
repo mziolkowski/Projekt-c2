@@ -2,72 +2,92 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
-#include <linux/ip.h>
 #include <linux/icmp.h>
+//#include <linux/ip.h>
+#include <linux/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "ipv4/src/ip.h"
+#include "ipv4/src/icmp_hdr.h"
 
-unsigned short in_cksum(unsigned short *addr, int len)
-{
-    register int sum = 0;
-    u_short answer = 0;
-    register u_short *w = addr;
-    register int nleft = len;
-    /*
-     * Our algorithm is simple, using a 32 bit accumulator (sum), we add
-     * sequential 16 bit words to it, and at the end, fold back all the
-     * carry bits from the top 16 bits into the lower 16 bits.
-     */
-    while (nleft > 1)
-    {
-        sum += *w++;
-        nleft -= 2;
-    }
-    /* mop up an odd byte, if necessary */
-    if (nleft == 1)
-    {
-        *(u_char *) (&answer) = *(u_char *) w;
-        sum += answer;
-    }
-    /* add back carry outs from top 16 bits to low 16 bits */
-    sum = (sum >> 16) + (sum & 0xffff);     /* add hi 16 to low 16 */
-    sum += (sum >> 16);             /* add carry */
-    answer = ~sum;              /* truncate to 16 bits */
-    return (answer);
-}
+//unsigned short in_cksum(unsigned short *addr, int len) {
+//    register int sum = 0;
+//    u_short answer = 0;
+//    register u_short *w = addr;
+//    register int nleft = len;
+//    /*
+//     * Our algorithm is simple, using a 32 bit accumulator (sum), we add
+//     * sequential 16 bit words to it, and at the end, fold back all the
+//     * carry bits from the top 16 bits into the lower 16 bits.
+//     */
+//    while (nleft > 1) {
+//        sum += *w++;
+//        nleft -= 2;
+//    }
+//    /* mop up an odd byte, if necessary */
+//    if (nleft == 1) {
+//        *(u_char *) (&answer) = *(u_char *) w;
+//        sum += answer;
+//    }
+//    /* add back carry outs from top 16 bits to low 16 bits */
+//    sum = (sum >> 16) + (sum & 0xffff);     /* add hi 16 to low 16 */
+//    sum += (sum >> 16);             /* add carry */
+//    answer = ~sum;              /* truncate to 16 bits */
+//    return (answer);
+//}
 
 
-int main(int argc, char* argv[])
-{
-    struct iphdr *ip, *ip_reply;
-    struct icmphdr* icmp;
+int main(int argc, char *argv[]) {
+    struct ip *pierwszyElementIp = NULL;
+    struct ip *poprzedniEleIp, *biezacyEleIp, *ip_reply;
+    struct icmp_hdr *pierwszyElementICMP = NULL;
+    struct icmp_hdr *poprzedniEleICMP, *biezacyEleICMP;
+//    struct iphdr *ip, *ip_reply;
+//    struct icmp_hdr* icmp;
     struct sockaddr_in connection;
-    char *dst_addr="192.168.0.115";
-    char *src_addr="127.0.0.1";
+    char *dst_addr = "192.168.0.115";
+    char *src_addr = "127.0.0.1";
     char *packet, *buffer;
     int sockfd, optval, addrlen;
     int i = 0;
+    char input[2];
+    int liczbaPakietow;
+    int dlugoscNaglowka;
+    int numerSekwencji;
+    int idIcmp;
+    int idIp;
 
-    packet = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
-    buffer = malloc(sizeof(struct iphdr) + sizeof(struct icmphdr));
-    ip = (struct iphdr*) packet;
-    icmp = (struct icmphdr*) (packet + sizeof(struct iphdr));
+    packet = malloc(sizeof(struct ip) + sizeof(struct icmp_hdr));
+    buffer = malloc(sizeof(struct ip) + sizeof(struct icmp_hdr));
+    biezacyEleIp = (struct ip *) packet;
+    biezacyEleICMP = (struct icmp_hdr *) (packet + sizeof(struct ip));
 
-    ip->ihl         = 5;
-    ip->version     = 4;
-    ip->tot_len     = sizeof(struct iphdr) + sizeof(struct icmphdr);
-    ip->protocol    = IPPROTO_ICMP;
-    ip->saddr       = inet_addr(src_addr);
-    ip->daddr       = inet_addr(dst_addr);
-    ip->check = in_cksum((unsigned short *)ip, sizeof(struct iphdr));
+    printf("\nIle wyslac pakietow? ");
+    scanf("%d", &liczbaPakietow);
 
-    icmp->type      = ICMP_ECHO;
-    icmp->code = 0;
-    icmp->un.echo.sequence= rand();
-    icmp->un.echo.id = rand();
-    //checksum
-    icmp->checksum = in_cksum((unsigned short *)icmp, sizeof(struct icmphdr));
+    printf("\nPodaj dlugosc naglowka: ");
+    scanf("%d", &dlugoscNaglowka);
+    printf("\nPodaj id: ");
+    scanf("%d", &idIp);
+    biezacyEleIp->ip_hl = (unsigned char) dlugoscNaglowka;
+    biezacyEleIp->ip_v = 4;
+    biezacyEleIp->ip_len = sizeof(struct ip) + sizeof(struct icmp_hdr);
+    biezacyEleIp->ip_id = (unsigned short) idIp;
+    biezacyEleIp->ip_p = IPPROTO_ICMP;
+    biezacyEleIp->ip_src_addr = inet_addr(src_addr);
+    biezacyEleIp->ip_dest_addr = inet_addr(dst_addr);
+
+    biezacyEleICMP->type = ICMP_ECHO;
+    biezacyEleICMP->code = 0;
+    printf("\nPodaj numer sekwencji: ");
+    scanf("%d", &numerSekwencji);
+
+    biezacyEleICMP->un.echo.sequence = (__be16) numerSekwencji;
+    printf("\nPodaj id: ");
+    scanf("%d", &idIcmp);
+
+    biezacyEleICMP->un.echo.id = (__be16) idIcmp;
 
     /* open ICMP socket */
     if ((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) == -1) {
@@ -78,29 +98,27 @@ int main(int argc, char* argv[])
     *  to automatically add a default ip header to the packet*/
     setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
 
-    connection.sin_family       = AF_INET;
-    connection.sin_addr.s_addr  = ip->daddr;
-    while(i<6) {
-        sendto(sockfd, packet, ip->tot_len, 0, (struct sockaddr *)&connection, sizeof(struct sockaddr));
-        printf("Sent %d byte packet to %s\n", ip->tot_len, dst_addr);
+    connection.sin_family = AF_INET;
+    connection.sin_addr.s_addr = biezacyEleIp->ip_dest_addr;
+    while (i < liczbaPakietow) {
+        sendto(sockfd, packet, biezacyEleIp->ip_len, 0, (struct sockaddr *) &connection, sizeof(struct sockaddr));
+        printf("Sent %d byte packet to %s\n", biezacyEleIp->ip_len, dst_addr);
 
 
-    addrlen = sizeof(connection);
-    if (recvfrom(sockfd, buffer, sizeof(struct iphdr) + sizeof(struct icmphdr), 0, (struct sockaddr *)&connection, &addrlen) == -1)
-    {
-        perror("recv");
-    }
-    else
-    {
-        char *cp;
-        ip_reply = (struct iphdr*) buffer;
-        cp = (char *)&ip_reply->saddr;
-//        printf("Received %d byte reply from %u.%u.%u.%u:\n", ntohs(ip_reply->tot_len), cp[0]&0xff,cp[1]&0xff,cp[2]&0xff,cp[3]&0xff);
-        printf("Received %d byte reply from %s \n", ntohs(ip_reply->tot_len), src_addr);
-        printf("ID: %d\n", ntohs(ip_reply->id));
-        printf("TTL: %d\n", ip_reply->ttl);
-        printf("Version: %d\n\n\n", ip_reply->version);
-    }
+        addrlen = sizeof(connection);
+        if (recvfrom(sockfd, buffer, sizeof(struct ip) + sizeof(struct icmp_hdr), 0, (struct sockaddr *) &connection,
+                     &addrlen) == -1) {
+            perror("recv");
+        } else {
+            char *cp;
+            ip_reply = (struct ip *) buffer;
+            cp = (char *) &ip_reply->ip_src_addr;
+
+            printf("Received %d byte reply from %s \n", ntohs(ip_reply->ip_len), src_addr);
+            printf("ID: %d\n", ntohs(ip_reply->ip_id));
+            printf("TTL: %d\n", ip_reply->ip_ttl);
+            printf("Version: %d\n\n\n", ip_reply->ip_v);
+        }
         i++;
     }
 
